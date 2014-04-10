@@ -148,13 +148,14 @@ class Builder extends \Illuminate\Database\Query\Builder {
             // Build the aggregation pipeline.
             $pipeline = array();
             if ($wheres) $pipeline[] = array('$match' => $wheres);
-
+            if (!$this->aggregate) $pipeline[] = array('$group' => $group);
+            
             // Apply order and limit
             if ($this->orders) $pipeline[] = array('$sort' => $this->orders);
             if ($this->offset) $pipeline[] = array('$skip' => $this->offset);
             if ($this->limit)  $pipeline[] = array('$limit' => $this->limit);
 
-            $pipeline[] = array('$group' => $group);
+            if ($this->aggregate) $pipeline[] = array('$group' => $group);
             
             // Execute aggregation
             $results = $this->collection->aggregate($pipeline);
